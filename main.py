@@ -11,9 +11,6 @@ import random
 
 warnings.filterwarnings("ignore")
 
-# ==========================================
-# 1. Config
-# ==========================================
 MODEL_ID = "Qwen/Qwen2.5-3B-Instruct"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 SAMPLE_SIZE = 200
@@ -65,9 +62,9 @@ def dtw_align(seq1, seq2):
         for j in range(1, m+1):
             dist = (seq1[i-1] - seq2[j-1]) ** 2
             cost[i, j] = dist + min(
-                cost[i-1, j],      # insertion
-                cost[i, j-1],      # deletion
-                cost[i-1, j-1]     # match
+                cost[i-1, j],
+                cost[i, j-1],
+                cost[i-1, j-1]
             )
 
     i, j = n, m
@@ -207,9 +204,6 @@ def evaluate_sample(question):
         "jsd_mean": np.mean(layer_jsd),
         "jsd_layerwise": str(layer_jsd)
     }
-
-
-print("\nLoading GSM8K...")
 dataset = load_dataset("gsm8k", "main", split="test")
 sampled = dataset.shuffle(seed=42).select(range(SAMPLE_SIZE))
 
@@ -225,18 +219,8 @@ for i, item in enumerate(tqdm(sampled)):
 df = pd.DataFrame(results)
 df.to_csv("fixed_adversarial_results.csv", index=False)
 
-print("\n" + "="*60)
-print("EVALUATION COMPLETE (FIXED VERSION)")
-print("="*60)
-
 print(f"Samples: {len(df)}")
 print(f"TVD base: {df['tvd_base'].mean():.4f}")
 print(f"JSD mean: {df['jsd_mean'].mean():.4f}")
 print(f"Shuffle impact A: {df['tvd_shuffle_A'].mean():.4f}")
 print(f"Shuffle impact B: {df['tvd_shuffle_B'].mean():.4f}")
-
-print("="*60)
-print("Interpretation:")
-print("- High shuffle TVD → CoT semantics matters")
-print("- Low JSD → possible routing invariance (interpret carefully)")
-print("="*60)
