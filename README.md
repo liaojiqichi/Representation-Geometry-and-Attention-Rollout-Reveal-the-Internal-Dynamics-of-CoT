@@ -1,1 +1,1 @@
-# Mechanistic Equifinality: DTW-Aligned-Attention-Reveals-the-Causal-Structure-of-CoT
+# Mechanistic Equifinality: Representation Geometry and Attention Rollout Reveal the Internal Dynamics of Chain-of-Thought
